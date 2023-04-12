@@ -16,4 +16,5 @@ class TodoForm(BaseModel):
     title: str = Field(max_length=40)
     description: str
     importance: int = Field(gt=0, lt=6)
+    complete: Optional[bool]
     user_id: Optional[int]
