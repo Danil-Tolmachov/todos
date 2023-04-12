@@ -61,7 +61,7 @@ async def create_user(db: Session, user: forms.UserForm) -> models.User:
     return user_model
 
 
-async def create_todo(db: Session, todo: forms.TodoForm) -> models.Todo or None:
+async def create_todo(db: Session, todo: forms.TodoForm, user_id: int) -> models.Todo or None:
     """
     Create a new todo item in the database.
 
@@ -72,15 +72,13 @@ async def create_todo(db: Session, todo: forms.TodoForm) -> models.Todo or None:
     Returns:
         - models.Todo or None: The created todo item if successful, otherwise None.
     """
-
-    if await get_todo(db, todo.id) is not None:
-        return None
-
     todo_model = models.Todo()
 
     todo_model.title = todo.title
     todo_model.description = todo.description
     todo_model.importance = todo.importance
+    todo_model.complete = False
+    todo_model.user_id = user_id
 
     db.add(todo_model)
     db.commit()
