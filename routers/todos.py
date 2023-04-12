@@ -1,6 +1,8 @@
 from fastapi import APIRouter
 
+
 router = APIRouter()
+
 
 # Test
 @router.get('/')
