@@ -8,6 +8,7 @@ class UserForm(BaseModel):
     username: str = Field(max_length=30)
     email: str
     password: str
+    password2: Optional[str]
 
 class TodoForm(BaseModel):
     id: Optional[int]

@@ -67,6 +67,15 @@ def set_access_token(response: Response, token):
     response.set_cookie(key='access_token', value=token)
     
 
+def delete_access_token(response: Response):
+    """
+    Delete the access token from cookie in the provided response object.
+
+    Args:
+    - response (fastapi.Response): the response object to delete the cookie from.
+    """
+    response.delete_cookie(key='access_token')
+
 
 def token_validation(token) -> bool:
     """

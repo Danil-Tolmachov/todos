@@ -1,4 +1,5 @@
 from fastapi.security import OAuth2PasswordBearer
+from fastapi.templating import Jinja2Templates
 from passlib.context import CryptContext
 from dotenv import load_dotenv
 from os import getenv
@@ -19,3 +20,6 @@ DEBUG = getenv('DEBUG', False)
 DATABASE_URL = getenv('DATABASE_URL')
 DATABASE_USER = getenv('DATABASE_USER')
 DATABASE_PASSWORD = getenv('DATABASE_PASSWORD')
+
+# Templating settings
+templates = Jinja2Templates('templates')
