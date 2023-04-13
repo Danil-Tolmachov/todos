@@ -1,2 +1,2 @@
-# todos
-FastAPI ToDo application
+# FastAPI ToDo application
+
