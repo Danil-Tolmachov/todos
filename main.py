@@ -1,10 +1,16 @@
-from fastapi import FastAPI
-from database import engine
+from fastapi import FastAPI, Request
+from fastapi.responses import RedirectResponse
+from fastapi.templating import Jinja2Templates
+from starlette import status
+from starlette.staticfiles import StaticFiles
+from database import SessionLocal, engine
 
 from routers import auth, todos
+from config import templates
 from models import Base
 
 import uvicorn
+
 
 
 Base.metadata.create_all(bind=engine)
@@ -12,6 +18,7 @@ Base.metadata.create_all(bind=engine)
 
 
 app = FastAPI()
+app.mount('/static', StaticFiles(directory='static'), name='static')
 
 app.include_router(
     auth.router,
@@ -28,12 +35,27 @@ app.include_router(
 
 
 
-# Test
+@app.exception_handler(401)
+async def not_authorized_handler(request, exc):
+    return RedirectResponse('/auth/login')
+
+
+@app.exception_handler(404)
+async def get_404_template(request: Request, exc):
+    return templates.TemplateResponse('http404.html', context={'request': request}, status_code=status.HTTP_404_NOT_FOUND)
+
+
+@app.exception_handler(405)
+async def method_not_allowed_handler(request, exc):
+    return RedirectResponse('/', status_code=status.HTTP_303_SEE_OTHER)
+
+
 @app.get('/')
-async def test():
-    return {'status': 'Successful'}
+async def redirect():
+    return RedirectResponse('/todos', status_code=status.HTTP_308_PERMANENT_REDIRECT)
+
 
 
 # Run app
 if __name__ == '__main__':
-    uvicorn.run(app)
+    uvicorn.run('main:app', reload=True)
