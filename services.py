@@ -72,6 +72,10 @@ async def create_todo(db: Session, todo: forms.TodoForm, user_id: int) -> models
     Returns:
         - models.Todo or None: The created todo item if successful, otherwise None.
     """
+
+    if not await get_user_by_id(user_id):
+        return None
+
     todo_model = models.Todo()
 
     todo_model.title = todo.title
@@ -178,7 +182,7 @@ async def delete_user(db: Session, id: int) -> bool:
     return True
 
 
-async def delete_todo(db: Session, id: int) -> bool:
+async def delete_todo(db: Session, todo_id: int) -> bool:
     """
     Deletes a todo item with the given ID.
 
@@ -189,7 +193,7 @@ async def delete_todo(db: Session, id: int) -> bool:
     Returns:
     - bool: True if the todo item was deleted successfully, False if the item was not found.
     """
-    todo = await get_todo(db, id)
+    todo = db.query(models.Todo).filter(models.Todo.id == todo_id)
 
     if todo is None:
         return False

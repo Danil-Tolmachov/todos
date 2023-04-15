@@ -1,5 +1,5 @@
-from fastapi import APIRouter, Depends, Form, Request, Response
-from fastapi.responses import RedirectResponse, HTMLResponse
+from fastapi import APIRouter, Depends, Form, Request
+from fastapi.responses import RedirectResponse
 from starlette import status
 from config import templates
 from sqlalchemy.orm import Session
@@ -99,4 +99,10 @@ async def update_todo(todo_id: int,
                           importance=priority)
     
     await services.update_todo(db, todo)
+    return RedirectResponse('/todos', status_code=status.HTTP_302_FOUND)
+
+
+@router.get('/delete/{todo_id}')
+async def delete_todo(todo_id: int, db: Session = Depends(get_db)):
+    await services.delete_todo(db, todo_id)
     return RedirectResponse('/todos', status_code=status.HTTP_302_FOUND)
