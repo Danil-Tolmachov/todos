@@ -1,13 +1,12 @@
 from fastapi import FastAPI, Request
 from fastapi.responses import RedirectResponse
-from fastapi.templating import Jinja2Templates
 from starlette import status
 from starlette.staticfiles import StaticFiles
-from database import SessionLocal, engine
+from database.setup import engine
 
 from routers import auth, todos
 from config import templates
-from models import Base
+from database.models import Base
 
 import uvicorn
 
@@ -45,9 +44,9 @@ async def get_404_template(request: Request, exc):
     return templates.TemplateResponse('http404.html', context={'request': request}, status_code=status.HTTP_404_NOT_FOUND)
 
 
-@app.exception_handler(405)
-async def method_not_allowed_handler(request, exc):
-    return RedirectResponse('/', status_code=status.HTTP_303_SEE_OTHER)
+# @app.exception_handler(405)
+# async def method_not_allowed_handler(request, exc):
+#     return RedirectResponse('/', status_code=status.HTTP_303_SEE_OTHER)
 
 
 @app.get('/')

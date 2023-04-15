@@ -1,10 +1,13 @@
+import sys
+sys.path.append('..')
+
 from datetime import datetime, timedelta
 from typing import Optional
 from fastapi import Response
-from jose import jwt, JWTError
+from jose import jwt
 from fastapi.encoders import jsonable_encoder
 
-import models
+from database import models
 import config
 
 

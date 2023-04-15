@@ -3,13 +3,13 @@ from fastapi.responses import RedirectResponse
 from starlette import status
 from config import templates
 from sqlalchemy.orm import Session
-from database import get_db
-from exceptions import get_404
+from database.setup import get_db
+from utils.exceptions import get_404
 from routers.auth import token_required
-from models import User
+from database.models import User
 
-import services
-import forms
+from database import services
+from utils import forms
 
 
 router = APIRouter()
@@ -17,7 +17,10 @@ router = APIRouter()
 
 
 @router.get('/', name='index')
-async def index_page(request: Request, user: User = Depends(token_required), db: Session = Depends(get_db)):
+async def index_page(request: Request, 
+                     user: User = Depends(token_required), 
+                     db: Session = Depends(get_db)):
+    
     todos = await services.get_user_todos(db, user.id)
 
     context = {
@@ -104,5 +107,9 @@ async def update_todo(todo_id: int,
 
 @router.get('/delete/{todo_id}')
 async def delete_todo(todo_id: int, db: Session = Depends(get_db)):
+
+    if not await services.get_todo(db, todo_id):
+        raise get_404()
+
     await services.delete_todo(db, todo_id)
     return RedirectResponse('/todos', status_code=status.HTTP_302_FOUND)

@@ -1,9 +1,9 @@
 from sqlalchemy.orm import Session
-from database import SessionLocal
+from database.setup import SessionLocal
 from routers.utils import hash_password
 
-import models
-import forms
+from database import models
+from utils import forms
 
 
 
@@ -73,7 +73,7 @@ async def create_todo(db: Session, todo: forms.TodoForm, user_id: int) -> models
         - models.Todo or None: The created todo item if successful, otherwise None.
     """
 
-    if not await get_user_by_id(user_id):
+    if not await get_user_by_id(db, user_id):
         return None
 
     todo_model = models.Todo()

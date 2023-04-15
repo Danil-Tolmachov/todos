@@ -3,13 +3,13 @@ from fastapi.responses import RedirectResponse
 from starlette import status
 from sqlalchemy.orm import Session
 
-from routers.utils import delete_access_token, verify_password, set_access_token, token_decode, token_encode, token_validation
-from exceptions import get_auth_exception, get_expired_token_exception, get_missing_token_exception, get_invalid_token_exception
-from database import get_db
+from utils.tokens import delete_access_token, verify_password, set_access_token, token_decode, token_encode, token_validation
+from utils.exceptions import get_auth_exception, get_expired_token_exception, get_missing_token_exception, get_invalid_token_exception
+from database.setup import get_db
 from config import templates
 
-import services
-import forms
+from database import services
+from utils import forms
 
 
 router = APIRouter()
