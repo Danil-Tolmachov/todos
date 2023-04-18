@@ -4,9 +4,12 @@ from passlib.context import CryptContext
 from dotenv import load_dotenv
 from os import getenv
 
+from pydantic import BaseSettings
+
+
 
 # load environment from '.env' file
-env = load_dotenv('.env')
+env = load_dotenv('../.env')
 
 # Encrypting vars
 ALGORITHM = 'HS256'
@@ -23,3 +26,8 @@ DATABASE_PASSWORD = getenv('DATABASE_PASSWORD')
 
 # Templating settings
 templates = Jinja2Templates('templates')
+
+class Settings(BaseSettings):
+
+    if DEBUG == False:
+        openapi_url: str = ""

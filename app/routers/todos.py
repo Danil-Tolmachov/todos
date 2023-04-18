@@ -8,7 +8,7 @@ from utils.exceptions import get_404
 from routers.auth import token_required
 from database.models import User
 
-from database import services
+from database import operations
 from utils import forms
 
 
@@ -21,7 +21,7 @@ async def index_page(request: Request,
                      user: User = Depends(token_required), 
                      db: Session = Depends(get_db)):
     
-    todos = await services.get_user_todos(db, user.id)
+    todos = await operations.get_user_todos(db, user.id)
 
     context = {
         'request': request,
@@ -46,7 +46,7 @@ async def create_todo(title = Form(),
     
     todo = forms.TodoForm(title=title, description=description, importance=priority)
     
-    await services.create_todo(db, todo, user.id)
+    await operations.create_todo(db, todo, user.id)
 
     return RedirectResponse('/todos', status_code=status.HTTP_302_FOUND)
 
@@ -57,10 +57,10 @@ async def complete_todo(todo_id: int,
                         user: User = Depends(token_required),
                         db: Session = Depends(get_db)):
     
-    if (await services.get_todo(db, todo_id)).user_id != user.id:
+    if (await operations.get_todo(db, todo_id)).user_id != user.id:
         raise get_404()
 
-    await services.change_todo_complete(db, todo_id)
+    await operations.change_todo_complete(db, todo_id)
 
     return RedirectResponse('/todos', status_code=status.HTTP_302_FOUND)
 
@@ -70,7 +70,7 @@ async def update_todo_page(request: Request, todo_id: int,
                            user: User = Depends(token_required), 
                            db: Session = Depends(get_db)):
 
-    todo = await services.get_todo(db, id=todo_id)
+    todo = await operations.get_todo(db, id=todo_id)
 
     if todo is None:
         raise get_404()
@@ -94,22 +94,22 @@ async def update_todo(todo_id: int,
                       user: User = Depends(token_required),
                       db: Session = Depends(get_db)):
     
-    if (await services.get_todo(db, todo_id)).user_id != user.id:
+    if (await operations.get_todo(db, todo_id)).user_id != user.id:
         raise get_404()
     
     todo = forms.TodoForm(id=todo_id, title=title, 
                           description=description,
                           importance=priority)
     
-    await services.update_todo(db, todo)
+    await operations.update_todo(db, todo)
     return RedirectResponse('/todos', status_code=status.HTTP_302_FOUND)
 
 
 @router.get('/delete/{todo_id}')
 async def delete_todo(todo_id: int, db: Session = Depends(get_db)):
 
-    if not await services.get_todo(db, todo_id):
+    if not await operations.get_todo(db, todo_id):
         raise get_404()
 
-    await services.delete_todo(db, todo_id)
+    await operations.delete_todo(db, todo_id)
     return RedirectResponse('/todos', status_code=status.HTTP_302_FOUND)

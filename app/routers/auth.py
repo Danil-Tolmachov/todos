@@ -8,7 +8,7 @@ from utils.exceptions import get_auth_exception, get_expired_token_exception, ge
 from database.setup import get_db
 from config import templates
 
-from database import services
+from database import operations
 from utils import forms
 
 
@@ -28,7 +28,7 @@ async def check_password(db: Session, id: int, password: str):
     Returns:
     - bool: True if the password matches the hash of the user's password, False otherwise.
     """
-    hash = await services.get_user_password(db, id)
+    hash = await operations.get_user_password(db, id)
 
     if verify_password(password, hash):
         return True
@@ -57,10 +57,10 @@ async def authenticate_user(db, username: str = None, password: str = None, toke
         user_id = data.get('id')
         
         if user_id:
-            user = await services.get_user_by_id(db, user_id)
+            user = await operations.get_user_by_id(db, user_id)
 
     elif username and password:
-            user = await services.get_user_by_username(db, username)
+            user = await operations.get_user_by_username(db, username)
 
             if user is None:
                 return None
@@ -187,7 +187,7 @@ async def create_user(db: Session = Depends(get_db),
     user = forms.UserForm(username=username, email=email,
                           password=password, password2=password2)
 
-    user = await services.create_user(db, user)
+    user = await operations.create_user(db, user)
 
     if user is None:
         return RedirectResponse('/auth/register', status_code=status.HTTP_303_SEE_OTHER)
